@@ -1,0 +1,44 @@
+version: '2'
+
+services:
+
+  mongodb:
+    ports:
+      - "27017:27017"
+    hostname: mongodb
+    image: mongo:3.2
+    stdin_open: true
+    tty: true
+
+  orion:
+    command:  -dbhost mongodb -port 1026 -logLevel DEBUG
+    depends_on:
+      - mongodb
+    expose:
+        - "1026"
+    hostname: orion
+    image: fiware/orion:latest
+    ports:
+      - "1026:1026"
+    stdin_open: true
+    tty: true
+
+  mosquitto:
+    ports:
+        - "1883:1883"
+    hostname: mosquitto
+    image: eclipse-mosquitto:latest
+    stdin_open: true
+    tty: true
+
+  # iotagent-lora:
+  #   depends_on:
+  #     - mongodb
+  #     - orion
+  #   entrypoint: bin/iotagent-lora test/performance/config-jmeter.js
+  #   hostname: iotagent-lora
+  #   image: ioeari/iotagent-lora
+  #   ports:
+  #     - "4061:4061"
+  #   stdin_open: true
+  #   tty: true
