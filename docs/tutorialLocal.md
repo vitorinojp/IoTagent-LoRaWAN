@@ -1,39 +1,108 @@
-# Users manual
-
-## Introduction
-
-Welcome to FIWARE LoRAWAN IoT Agent's user guide.
-
-Any feedback on this document is highly welcome, including bug reports, typos or stuff you think should be included but
-is not. Please send the feedback through [Github](https://github.com/Atos-Research-and-Innovation/IoTagent-LoRaWAN).
-Thanks in advance!
-
-In order to use this IoT Agent, it must be noted that LoRa / LoRaWAN technologies are intended to be used with physical
-devices and that a meshed network architecture is proposed by this standard including multiple hardware and software
-elements, e.g, end-nodes or devices, gateways, network servers, application servers, IoT platforms and applications.
-Even, depending on the mappings of the software components over the hardware elements, multiple variations from this
-basic architecture can be derived. Further information can be found in
+In order to use this IoT Agent, it must be noted that LoRa / LoRaWAN technologies are intended to be used with devices
+and that a meshed network architecture is proposed by this standard including multiple hardware and software elements,
+e.g, end-nodes or devices, gateways, network servers, application servers, IoT platforms and applications. Even,
+depending on the mappings of the software components over the hardware elements, multiple variations from this basic
+architecture can be derived. Further information can be found in
 [What is the LoRaWAN Specification?](https://lora-alliance.org/about-lorawan).
 
 Therefore, the characteristics of the LoRaWAN protocol imply that in order to test this agent in realistic conditions,
-it is not possible just to use a laptop and the IoT Agent and the user may need a complete LoRaWAN infrastructure.
-**Nevertheless, in order to provide a step-by-step process and to target audiences with different levels of expertise,
-simulation or testing scenarios that allow getting started with LoRaWAN and IoT agent concepts are included. More
-general information is presented in the rest of subsections of the present tutorial**
+it is not possible to intend using just a laptop and the IoT Agent and the user may need a complete LoRaWAN
+infrastructure. Nevertheless, in order to provide a step-by-step process and to target audiences with different levels
+of expertise, in the following subsections this guide includes also simulation or testing scenarios that allow getting
+started with LoRaWAN and IoT agent concepts.
 
-1. [Testing the LoRaWAN IoT agent without using physical devices and gateways and without deploying or using a LoRaWAN infrastructure](tutorialLocal.md).
-   A local MQTT message broker is deployed in order to perform the testing. The simulated scenario assumes that payloads
-   are decoded by the application server.
-2. Testing the LoRaWAN IoT agent without using physical devices and gateways. TheThingsNetwork (TTN) LoRaWAN stack is
-   used. Simulation of sending uplink payloads from devices to the IOTA is done in TTN console and relying on
-   CayenneLpp.
-3. Testing the LoRaWAN IoT agent without using physical devices and gateways. A local deployment of LoRaServer.io stack
-   is used. Simulation of sending uplink payloads from devices to the IOTA is done relying on CayenneLpp.
-4. Testing the LoRaWAN IoT agent with a real LoRaWAN infrastructure and physical devices.
+# Testing the LoRaWAN IoT agent without using physical devices and gateways and without deploying or using a LoRaWAN infrastructure. A local MQTT message broker is deployed in order to perform the testing
 
-## Supported LoRaWAN stacks/technologies
+-   From the root folder of the repository, run:
 
-### The Things Network (TTN)
+```bash
+docker-compose -f examples/docker-compose.yml up
+```
+
+-   In order to verify that the _FIWARE LoRaWAN IoT Agent_ is running, execute:
+
+```bash
+curl -X GET   http://localhost:4041/iot/about
+```
+
+-   The output should be:
+
+```json
+{ "libVersion": "2.6.0-next", "port": 4041, "baseRoot": "/" }
+```
+
+-   In order to verify that the _FIWARE context broker_ is running, execute:
+
+```bash
+curl localhost:1026/version
+```
+
+-   The output should be:
+
+```json
+{
+    "orion": {
+        "version": "2.1.0-next",
+        "uptime": "0 d, 0 h, 17 m, 57 s",
+        "git_hash": "0f61fc575b869dcd26f2eae595424fa424f9bc28",
+        "compile_time": "Wed Dec 19 17:07:33 UTC 2018",
+        "compiled_by": "root",
+        "compiled_in": "07ff8fcb03f5",
+        "release_date": "Wed Dec 19 17:07:33 UTC 2018",
+        "doc": "https://fiware-orion.rtfd.io/"
+    }
+}
+```
+
+-In order to start using the IoTA, a new device must be provisioned. Execute the following command replacing
+_ApplicationId_, _ApplicationAccessKey_, _DeviceEUI_ and _ApplicationEUI_ with the appropriate values extracted in
+previous steps.
+
+```bash
+curl -X POST \
+  http://localhost:4041/iot/devices \
+  -H 'Content-Type: application/json' \
+  -H 'fiware-service: atosioe' \
+  -H 'fiware-servicepath: /lorattn' \
+  -d '{
+  "devices": [
+    {
+      "device_id": "device001",
+      "entity_name": "LORA-DEVICE",
+      "entity_type": "LoraDevice",
+      "timezone": "America/Santiago",
+      "attributes": [
+        {
+          "name": "temperature_1",
+          "type": "Number"
+        }
+      ],
+      "internal_attributes": {
+        "lorawan": {
+          "application_server": {
+            "host": "localhost",
+            "provider": "TTN"
+          },
+          "dev_eui": "deviceEui001",
+          "app_eui": "appEui001",
+          "application_id": "applicationId001",
+          "application_key": "2B7E151628AED2A6ABF7158809CF4F3C"
+        }
+      }
+    }
+  ]
+}'
+```
+
+This command will create a simple LoRaWAN device, with just one declared active attribute: temperature.
+
+# Testing the LoRaWAN IoT agent without using physical devices and gateways and without deploying a LoRaWAN infrastructure. _The Things Network (TTN)_ stack will be used to perform the simulation
+
+# Testing the LoRaWAN IoT agent without using physical devices and gateways. _LoRaServer.io_ stack will be deployed locally in order to perform the simulation.
+
+# Supported LoRaWAN stacks/technologies
+
+## The Things Network (TTN)
 
 1.  Register your LoRaWAN gateways following `https://www.thethingsnetwork.org/docs/gateways/registration.html`.
 2.  Create one or several applications following `https://www.thethingsnetwork.org/docs/applications/add.html`.
@@ -50,7 +119,7 @@ general information is presented in the rest of subsections of the present tutor
     -   Username: It is the Application ID.
     -   Password (step 3)
 
-### LoRaServer.io
+## LoRaServer.io
 
 1.  Install/deploy LoRa Server project. Docker installation method is recommended:
     `https://www.loraserver.io/install/docker/`
@@ -68,7 +137,7 @@ general information is presented in the rest of subsections of the present tutor
     -   Username if it is defined.
     -   Password if it is defined.
 
-## API Walkthrough
+# API Walkthrough
 
 This section of the _Users Manual_ provides examples of how to use the IoTA API to provision LoRaWAN devices using three
 different mechanisms.
@@ -81,7 +150,7 @@ All of them use a relatively simple device or node reporting the following measu
 -   A generic digital input
 -   A generic digital output
 
-### Device provisioning
+## Device provisioning
 
 This option allows provisioning a specific device, describing its attributes and LoRaWAN information. **Thus, using a
 single Application Server, we can provision devices reporting different types of measurements.**
@@ -157,7 +226,7 @@ You can query the corresponding entity in the Context Broker with:
 curl localhost:1026/v2/entities/LORA-N-003 -s -S -H 'Accept: application/json' --header 'fiware-service: smartgondor' --header 'fiware-servicepath: /gardens' | python -mjson.tool
 ```
 
-### Configuration provisioning
+## Configuration provisioning
 
 If a group of devices reports the same observations (i.e., smart meters for a neighborhood or building), the
 _configuration API_ can be used to pre-provision all of them with a single request.**With this approach, all the devices
@@ -224,7 +293,7 @@ update arrives, it will create the corresponding device internally and also in t
 pre-provisioned configuration. Finally, it will forward appropriate context update requests to the Context Broker to
 update the attributes' values.
 
-### Static configuration
+## Static configuration
 
 Finally, it is also possible to provide a static configuration for the IoTa. As it happens with the previous
 alternative, this approach is useful for groups of devices which report the same observations. Again, **all the devices
