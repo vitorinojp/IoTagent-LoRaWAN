@@ -18,7 +18,7 @@ basic architecture can be derived. Further information can be found in
 Therefore, the characteristics of the LoRaWAN protocol imply that in order to test this agent in realistic conditions,
 it is not possible just to use a laptop and the IoT Agent and the user may need a complete LoRaWAN infrastructure.
 **Nevertheless, in order to provide a step-by-step process and to target audiences with different levels of expertise,
-simulation or testing scenarios that allow getting started with LoRaWAN and IoT agent concepts are included. More
+simulation or testing scenarios that allow getting started with LoRaWAN and the IoT agent concepts are included. More
 general information is presented in the rest of subsections of the present tutorial**
 
 1. [Testing the LoRaWAN IoT agent without using physical devices and gateways and without deploying or using a LoRaWAN infrastructure](tutorialLocal.md).
