@@ -32,6 +32,19 @@ sudo apt-get install git
 sudo apt-get install mosquitto-clients
 ```
 
+## Architecture
+
+The tutorial allows the deployment of the following system, comprising a basic FIWARE IoT stack:
+
+![Architecture](https://github.com/Atos-Research-and-Innovation/IoTagent-LoRaWAN/blob/master/docs/img/tutorial_local.png)
+
+-   **MQTT broker** that is used to simulate the reception of data from _LORAWAN application servers_.
+-   **FIWARE IoT Agent** enables the ingestion of data from _LoRaWAN application servers_ in _NGSI context brokers_,
+    subscribing to appropriate communication channels (i.e., MQTT topics), decoding payloads and translating them to
+    NGSI data model. It relies on a _MongoDB database_ to persist information.
+-   **FIWARE Context Broker** manages large-scale context information abstracting the type of data source and the
+    underlying communication technologies. It relies on a _MongoDB database_ to persist information.
+
 ## Clone the GitHub repository
 
 All the code and files needed to follow this tutorial are included in
