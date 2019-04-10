@@ -201,7 +201,8 @@ mosquitto_pub -t applicationId/devices/fake_device/up -m "{\"payload_fields\":{\
 
 This command simulates partially the notification notified by _TTN application server_ to the _IoT Agent_ when a new
 message is sent by a device. As it can be seen, in this example, the simulation assumes that the payload is decoded by
-the application server.
+the application server. The format is the one used by TTN in order to notify
+[uplink messages](https://www.thethingsnetwork.org/docs/applications/mqtt/api.html#uplink-messages).
 
 -   It is possible to check that the whole data flow is working correctly by calling the API of the _Context Broker_:
 
