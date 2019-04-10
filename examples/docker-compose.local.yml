@@ -16,7 +16,9 @@ services:
     expose:
       - "1026"
     hostname: orion
-    image: fiware/orion:latest
+    image: fiware/orion:2.1.0
+    ports:
+      - "1026:1026"
     stdin_open: true
     tty: true
 
@@ -25,6 +27,8 @@ services:
       - "1883"
     hostname: mosquitto
     image: eclipse-mosquitto:latest
+    ports:
+      - "1883:1883"
     stdin_open: true
     tty: true
 
@@ -33,13 +37,13 @@ services:
       - mongodb
       - mosquitto
       - orion
-    entrypoint: bin/iotagent-lora test/config-test.js
+    entrypoint: bin/iotagent-lora docker/config-docker.js
     environment:
       - IOTA_CB_HOST=orion
       - IOTA_CB_PORT=1026
-      - TEST_MOSQUITTO_HOST=mosquitto
-      - TEST_MONGODB_HOST=mongodb
     hostname: iotagent-lora
-    image: ioeari/iotagent-lora
+    image: fiware/iotagent-lorawan:1.1.0
+    ports:
+      - "4041:4041"
     stdin_open: true
     tty: true

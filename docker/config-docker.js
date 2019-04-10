@@ -134,7 +134,7 @@ config.iota = {
      * URL Where the IOTA Will listen for incoming updateContext and queryContext requests (for commands and passive
      * attributes). This URL will be sent in the Context Registration requests.
      */
-    providerUrl: 'http://iotagent-lora:4061',
+    providerUrl: 'http://iotagent-lora:4064',
 
     /**
      * Default maximum expire date for device registrations.

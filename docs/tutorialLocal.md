@@ -26,6 +26,12 @@ sudo apt-get install curl
 sudo apt-get install git
 ```
 
+-   Mosquitto clients
+
+```
+sudo apt-get install mosquitto-clients
+```
+
 ## Clone the GitHub repository
 
 All the code and files needed to follow this tutorial are included in
@@ -47,13 +53,13 @@ docker-compose -f examples/docker-compose.local.yml up
 -   In order to verify that the _FIWARE LoRaWAN IoT Agent_ is running, execute:
 
 ```bash
-curl -X GET   http://localhost:4061/iot/about
+curl -X GET   http://localhost:4041/iot/about
 ```
 
 -   The output should be:
 
 ```json
-{ "libVersion": "2.6.0-next", "port": 4061, "baseRoot": "/" }
+{ "libVersion": "2.8.0-next", "port": 4041, "baseRoot": "/" }
 ```
 
 -   In order to verify that the _FIWARE context broker_ is running, execute:
@@ -78,3 +84,147 @@ curl localhost:1026/version
     }
 }
 ```
+
+## Provision LoRaWAN endnode and query FIWARE context data
+
+-In order to start using the IoTA, a new device must be provisioned. Execute the following command. Please note that as
+no devices or LoRaWAN stack are being used, _ApplicationId_, _ApplicationAccessKey_, _DeviceEUI_ and _ApplicationEUI_
+contain fake values.
+
+```bash
+curl -X POST \
+  http://localhost:4041/iot/devices \
+  -H 'Content-Type: application/json' \
+  -H 'fiware-service: atosioe' \
+  -H 'fiware-servicepath: /lorattn' \
+  -d '{
+  "devices": [
+    {
+      "device_id": "fake_device",
+      "entity_name": "LORA-DEVICE",
+      "entity_type": "LoraDevice",
+      "timezone": "America/Santiago",
+      "attributes": [
+        {
+          "name": "temperature_1",
+          "type": "Number"
+        }
+      ],
+      "internal_attributes": {
+        "lorawan": {
+          "application_server": {
+            "host": "mosquitto",
+            "provider": "TTN"
+          },
+          "dev_eui": "deviceEUI",
+          "app_eui": "appEUI",
+          "application_id": "applicationId",
+          "application_key": "applicationKey",
+          "data_model": "application_server"
+        }
+      }
+    }
+  ]
+}'
+```
+
+This command will create a simple LoRaWAN device, with just one declared active attribute: temperature.
+
+-   The list of provisioned devices can be retrieved with:
+
+```bash
+curl -X GET \
+  http://localhost:4041/iot/devices/ \
+  -H 'Content-Type: application/json' \
+  -H 'fiware-service: atosioe' \
+  -H 'fiware-servicepath: /lorattn'
+```
+
+-   It should return something similar to:
+
+```json
+{
+    "count": 1,
+    "devices": [
+        {
+            "device_id": "fake_device",
+            "service": "atosioe",
+            "service_path": "/lorattn",
+            "entity_name": "LORA-DEVICE",
+            "entity_type": "LoraDevice",
+            "attributes": [
+                {
+                    "object_id": "temperature_1",
+                    "name": "temperature_1",
+                    "type": "Number"
+                }
+            ],
+            "lazy": [],
+            "commands": [],
+            "static_attributes": [],
+            "internal_attributes": {
+                "lorawan": {
+                    "application_server": {
+                        "host": "mosquitto",
+                        "provider": "TTN"
+                    },
+                    "dev_eui": "deviceEUI",
+                    "app_eui": "appEUI",
+                    "application_id": "applicationId",
+                    "application_key": "applicationKey",
+                    "data_model": "application_server"
+                }
+            }
+        }
+    ]
+}
+```
+
+-   In order to simulate that a LoRaWAN device sends information:
+
+```bash
+mosquitto_pub -t applicationId/devices/fake_device/up -m "{\"payload_fields\":{\"temperature_1\":43.2}}"
+```
+
+This command simulates partially the notification notified by _TTN application server_ to the _IoT Agent_ when a new
+message is sent by a device. As it can be seen, in this example, the simulation assumes that the payload is decoded by
+the application server.
+
+-   It is possible to check that the whole data flow is working correctly by calling the API of the _Context Broker_:
+
+```bash
+curl -X GET \
+  http://localhost:1026/v2/entities \
+  -H 'fiware-service: atosioe' \
+  -H 'fiware-servicepath: /lorattn'
+```
+
+-   The result should be similar to:
+
+```json
+[
+    {
+        "id": "LORA-DEVICE",
+        "type": "LoraDevice",
+        "TimeInstant": {
+            "type": "DateTime",
+            "value": "2019-04-10T11:01:33.00Z",
+            "metadata": {}
+        },
+        "temperature_1": {
+            "type": "Number",
+            "value": 43.2,
+            "metadata": {
+                "TimeInstant": {
+                    "type": "DateTime",
+                    "value": "2019-04-10T11:01:33.00Z"
+                }
+            }
+        }
+    }
+]
+```
+
+-   As it can be seen, the data extracted from _FIWARE Context Broker_ is represented using _NGSI data model_, being a
+    standardized representation independent of the underlying LoRaWAN communication protocol and the payload encoding
+    format.
