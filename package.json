@@ -24,12 +24,12 @@
   },
   "author": "ATOS SPAIN S.A. IoE Lab, Resarch and Innovation department",
   "dependencies": {
-    "async": "^2.6.1",
+    "async": "^2.6.3",
     "cbor-sync": "^1.0.3",
     "iotagent-node-lib": "git://github.com/telefonicaid/iotagent-node-lib.git#master",
     "mqtt": "^2.18.8",
     "request": "^2.88.0",
-    "winston": "^3.1.0"
+    "winston": "^3.3.3"
   },
   "devDependencies": {
     "@semantic-release/changelog": "^3.0.2",
@@ -42,9 +42,9 @@
     "eslint-plugin-markdown": "^1.0.0",
     "eslint-plugin-mocha": "^5.2.0",
     "eslint-plugin-node": "^8.0.0",
+    "eslint-plugin-prettier": "~3.1.0",
     "eslint-plugin-promise": "^4.0.1",
     "eslint-plugin-standard": "^4.0.0",
-    "eslint-plugin-prettier": "~3.1.0",
     "husky": "~1.1.0",
     "istanbul": "^0.4.5",
     "lint-staged": "~7.3.0",
