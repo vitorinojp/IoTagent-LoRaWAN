@@ -26,6 +26,7 @@
   "dependencies": {
     "async": "^2.6.3",
     "cbor-sync": "^1.0.3",
+    "got": "^11.8.3",
     "iotagent-node-lib": "^2.14.0",
     "mqtt": "^2.18.8",
     "request": "^2.88.0",
